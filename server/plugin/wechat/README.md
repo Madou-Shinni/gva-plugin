@@ -45,4 +45,4 @@ type Config struct {
 
 ### 注意事项
 
-如果你只是单独做**小程序**或者**公众号**开发，可以在管理你需要同步的令牌server/plugin/wechat/jobs/cron.go
+如果你只是单独做**小程序**或者**公众号**开发，可以在server/plugin/wechat/jobs/cron.go中管理你需要同步的令牌
