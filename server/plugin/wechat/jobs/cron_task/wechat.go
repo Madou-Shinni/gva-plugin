@@ -18,7 +18,18 @@ func RefreshAccessToken() {
 	ctx := context.Background()
 	rdb := global.GlobalConfig.Rdb
 	// 获取微信配置
-	wechatConfig := global.GlobalConfig.Wechat
+	config, err := common.GetWechatConfig()
+	if err != nil {
+		global.GlobalConfig.Log.Error("RefreshAccessToken 获取微信配置失败", zap.Error(err))
+		return
+	}
+
+	// 禁用
+	if !config.MiniProgramEnabled {
+		return
+	}
+
+	wechatConfig := config.ToWxConfig()
 	appId := wechatConfig.AppID
 
 	// 从中控服务器获取access token
@@ -65,7 +76,18 @@ func RefreshPublicAccessToken() {
 	ctx := context.Background()
 	rdb := global.GlobalConfig.Rdb
 	// 获取微信配置
-	wechatConfig := global.GlobalConfig.Wechat
+	config, err := common.GetWechatConfig()
+	if err != nil {
+		global.GlobalConfig.Log.Error("RefreshAccessToken 获取微信配置失败", zap.Error(err))
+		return
+	}
+
+	// 禁用
+	if !config.OfficialAccountEnabled {
+		return
+	}
+
+	wechatConfig := config.ToWxConfig()
 	appId := wechatConfig.PubWxConfig.AppID
 
 	// 从中控服务器获取access token
@@ -112,7 +134,18 @@ func RefreshPublicJsApiTicket() {
 	ctx := context.Background()
 	rdb := global.GlobalConfig.Rdb
 	// 获取微信配置
-	wechatConfig := global.GlobalConfig.Wechat
+	config, err := common.GetWechatConfig()
+	if err != nil {
+		global.GlobalConfig.Log.Error("RefreshAccessToken 获取微信配置失败", zap.Error(err))
+		return
+	}
+
+	// 禁用
+	if !config.OfficialAccountEnabled {
+		return
+	}
+
+	wechatConfig := config.ToWxConfig()
 	appId := wechatConfig.PubWxConfig.AppID
 
 	// 从中控服务器获取js api ticket

@@ -37,10 +37,6 @@ func InstallPlugin(Router *gin.Engine) {
 
 	// 微信模块
 	PluginInit(PublicGroup, wechat.CreateWechatPlug(
-		"wx98a797ca9e2ab5af",
-		"64b179b56e6f6eb2bb14b6978b57d602",
-		"wx98a797ca9e2ab5af",
-		"64b179b56e6f6eb2bb14b6978b57d602",
 		global.GVA_REDIS,
 		global.GVA_LOG),
 	)

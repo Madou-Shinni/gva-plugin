@@ -1,11 +1,16 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/wechat/common"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/wechat/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/wechat/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/wechat/pkg/tools"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -28,6 +33,14 @@ func (cuApi *WechatApi) GetJsApiUsingPermissions(c *gin.Context) {
 		return
 	}
 
+	// 获取微信配置
+	config, err := common.GetWechatConfig()
+	if err != nil {
+		response.FailWithMessage("empty code", c)
+		return
+	}
+	wechatConfig := config.ToWxConfig()
+
 	noncestr := tools.NewRandGenerator(tools.WithLength(12)).Generate()
 	jsapi_ticket := common.GetWechatPublicJsApiTicket()
 	data := tools.GetJsApiUsingPermissions{
@@ -38,7 +51,7 @@ func (cuApi *WechatApi) GetJsApiUsingPermissions(c *gin.Context) {
 	}
 
 	sha1 := data.Sha1()
-	appId := global.GlobalConfig.Wechat.PubWxConfig.AppID // 公众号appId
+	appId := wechatConfig.PubWxConfig.AppID // 公众号appId
 
 	result := tools.GetJsApiUsingPermissionsResp{
 		GetJsApiUsingPermissions: data,
@@ -59,15 +72,20 @@ func (cuApi *WechatApi) GetJsApiUsingPermissions(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wechat/userInfo [get]
 func (cuApi *WechatApi) GetSnsapiUserInfo(c *gin.Context) {
-	// 获取微信配置
-	wechatConfig := global.GlobalConfig.Wechat
-
 	// 获取code
 	code := c.Query("code")
 	if code == "" {
 		response.FailWithMessage("empty code", c)
 		return
 	}
+
+	// 获取微信配置
+	config, err := common.GetWechatConfig()
+	if err != nil {
+		response.FailWithMessage("empty code", c)
+		return
+	}
+	wechatConfig := config.ToWxConfig()
 
 	// 获取web access token
 	result, err := wechatConfig.PubWxConfig.GetWebAccessToken(code)
@@ -88,4 +106,45 @@ func (cuApi *WechatApi) GetSnsapiUserInfo(c *gin.Context) {
 	}
 
 	response.OkWithData(userInfo, c)
+}
+
+// GetConfig 获取配置
+func (cuApi *WechatApi) GetConfig(c *gin.Context) {
+	// 获取微信配置
+	config, err := common.GetWechatConfig()
+	if err != nil && !errors.Is(err, redis.Nil) {
+		response.FailWithMessage("获取微信配置失败", c)
+		return
+	}
+
+	if errors.Is(err, redis.Nil) {
+		response.OkWithData(model.Wechat{}, c)
+		return
+	}
+
+	response.OkWithData(config, c)
+}
+
+// UpdateConfig 更新配置
+func (cuApi *WechatApi) UpdateConfig(c *gin.Context) {
+	var wechatConfig model.Wechat
+	rdb := global.GlobalConfig.Rdb
+	log := global.GlobalConfig.Log
+	ctx := context.Background()
+
+	err := c.ShouldBindJSON(&wechatConfig)
+	if err != nil {
+		log.Error("更新微信配置失败，请求参数异常", zap.Error(err))
+		response.FailWithMessage("参数异常", c)
+		return
+	}
+
+	_, err = tools.SetRedisStrResult[model.Wechat](rdb, ctx, common.GetWechatConfigKey(), wechatConfig, -time.Second)
+	if err != nil && !errors.Is(err, redis.Nil) {
+		log.Error("更新微信配置失败", zap.Error(err))
+		response.FailWithMessage("更新微信配置失败", c)
+		return
+	}
+
+	response.Ok(c)
 }
