@@ -10,6 +10,11 @@ const routes = [{
   component: () => import('@/view/init/index.vue')
 },
 {
+  path: '/wechat',
+  name: 'Wechat',
+  component: () => import('@/plugin/wechat/view/index.vue')
+},
+{
   path: '/login',
   name: 'Login',
   component: () => import('@/view/login/index.vue')
