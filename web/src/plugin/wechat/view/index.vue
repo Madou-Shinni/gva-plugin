@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="bg-white p-8 shadow-md rounded">
     <h1>微信配置</h1>
+    <hr class="my-4">
     <el-form :model="wechatConfig" :rules="rules" ref="wechatConfigForm" label-width="120px">
       <el-form-item label="小程序配置" prop="miniProgramEnabled">
         <el-switch v-model="wechatConfig.miniProgramEnabled" active-text="启用" inactive-text="禁用" />
