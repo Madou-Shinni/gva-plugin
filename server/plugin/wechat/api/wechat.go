@@ -109,6 +109,13 @@ func (cuApi *WechatApi) GetSnsapiUserInfo(c *gin.Context) {
 }
 
 // GetConfig 获取配置
+// @Tags WeChat
+// @Summary 获取配置
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wechat/private/config [get]
 func (cuApi *WechatApi) GetConfig(c *gin.Context) {
 	// 获取微信配置
 	config, err := common.GetWechatConfig()
@@ -126,6 +133,14 @@ func (cuApi *WechatApi) GetConfig(c *gin.Context) {
 }
 
 // UpdateConfig 更新配置
+// @Tags WeChat
+// @Summary 更新配置
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param  data  body  model.Wechat true  "wechat配置"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
+// @Router /wechat/private/config [put]
 func (cuApi *WechatApi) UpdateConfig(c *gin.Context) {
 	var wechatConfig model.Wechat
 	rdb := global.GlobalConfig.Rdb
@@ -147,4 +162,33 @@ func (cuApi *WechatApi) UpdateConfig(c *gin.Context) {
 	}
 
 	response.Ok(c)
+}
+
+// GetToken 获取微信令牌
+// @Tags WeChat
+// @Summary 获取微信令牌
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param  type  query  string true  "令牌类型类型 miniProgram | officialAccount"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wechat/private/token [put]
+func (cuApi *WechatApi) GetToken(c *gin.Context) {
+	tp := c.Query("type")
+
+	var data = struct {
+		AccessToken string `json:"accessToken"`
+	}{}
+
+	if tp == "miniProgram" {
+		data.AccessToken = common.GetWechatAccessToken()
+		response.OkWithData(data, c)
+		return
+	}
+
+	if tp == "officialAccount" {
+		data.AccessToken = common.GetWechatPublicAccessToken()
+		response.OkWithData(data, c)
+		return
+	}
 }

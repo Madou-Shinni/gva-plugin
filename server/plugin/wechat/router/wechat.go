@@ -9,8 +9,8 @@ import (
 type WechatRouter struct{}
 
 func (s *WechatRouter) InitWechatRouter(Router *gin.RouterGroup) {
-	wechatRouter := Router
-	wechatAuthRouter := Router.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
+	wechatRouter := Router.Group("/public")
+	wechatAuthRouter := Router.Group("/private").Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	wechatApi := api.ApiGroupApp.WechatApi
 	{
 		wechatRouter.GET("jsapi", wechatApi.GetJsApiUsingPermissions) // 获取jssdk调用权限
@@ -20,6 +20,7 @@ func (s *WechatRouter) InitWechatRouter(Router *gin.RouterGroup) {
 	{
 		wechatAuthRouter.GET("config", wechatApi.GetConfig)    // 获取微信配置
 		wechatAuthRouter.PUT("config", wechatApi.UpdateConfig) // 修改微信配置
+		wechatAuthRouter.GET("token", wechatApi.GetToken)      // 获取微信令牌
 	}
 
 }
