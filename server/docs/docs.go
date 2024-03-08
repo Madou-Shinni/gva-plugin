@@ -5078,7 +5078,106 @@ const docTemplate = `{
                 }
             }
         },
-        "/wechat/jsapi": {
+        "/wechat/private/config": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WeChat"
+                ],
+                "summary": "获取配置",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"data\":{},\"msg\":\"获取成功\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WeChat"
+                ],
+                "summary": "更新配置",
+                "parameters": [
+                    {
+                        "description": "wechat配置",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Wechat"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"data\":{},\"msg\":\"更新成功\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/wechat/private/token": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WeChat"
+                ],
+                "summary": "获取微信令牌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "令牌类型类型 miniProgram | officialAccount",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\":true,\"data\":{},\"msg\":\"获取成功\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/wechat/public/jsapi": {
             "get": {
                 "security": [
                     {
@@ -5114,7 +5213,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/wechat/userInfo": {
+        "/wechat/public/userInfo": {
             "get": {
                 "security": [
                     {
@@ -6201,6 +6300,41 @@ const docTemplate = `{
                 "to": {
                     "description": "收件人:多个以英文逗号分隔 例：a@qq.com b@qq.com 正式开发中请把此项目作为参数使用",
                     "type": "string"
+                }
+            }
+        },
+        "model.Wechat": {
+            "type": "object",
+            "properties": {
+                "miniProgram": {
+                    "type": "object",
+                    "properties": {
+                        "appId": {
+                            "type": "string"
+                        },
+                        "appSecret": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "miniProgramEnabled": {
+                    "description": "小程序",
+                    "type": "boolean"
+                },
+                "officialAccount": {
+                    "type": "object",
+                    "properties": {
+                        "appId": {
+                            "type": "string"
+                        },
+                        "appSecret": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "officialAccountEnabled": {
+                    "description": "公众号",
+                    "type": "boolean"
                 }
             }
         },

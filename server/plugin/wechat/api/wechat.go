@@ -24,7 +24,7 @@ type WechatApi struct{}
 // @Produce application/json
 // @Param url query string true "url"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /wechat/jsapi [get]
+// @Router /wechat/public/jsapi [get]
 func (cuApi *WechatApi) GetJsApiUsingPermissions(c *gin.Context) {
 	var url string
 	url = c.Query("url")
@@ -70,7 +70,7 @@ func (cuApi *WechatApi) GetJsApiUsingPermissions(c *gin.Context) {
 // @Produce application/json
 // @Param code query string true "用户同意授权，获取code"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /wechat/userInfo [get]
+// @Router /wechat/public/userInfo [get]
 func (cuApi *WechatApi) GetSnsapiUserInfo(c *gin.Context) {
 	// 获取code
 	code := c.Query("code")

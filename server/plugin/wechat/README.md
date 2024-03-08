@@ -1,37 +1,61 @@
-## 微信模块
+# 微信模块
 
 #### 开发者: ricardo
 
 ### 特点
 
 1. [x] 基于gin-vue-admin v2.6.0
-2. [x] 支持多端同步微信accesstoken
+2. [x] 支持多端同步获取微信accesstoken
 3. [x] 支持小程序和公众号开发
+4. [x] 启动时自动生成插件菜单设置权限
+5. [x] 动态的微信配置
 
-### 使用步骤
+## 运行截图
 
-#### 1. 将插件文件夹放入server/plugin目录下
+![img.png](img.png)
+
+![img_1.png](img_1.png)
+
+![img_3.png](img_3.png)
+
+## 使用步骤
+
+### 后端
+#### 1. 将插件server下的文件夹放入server/plugin目录下
 
 #### 2. 在server/initialize/plugin.go中注册插件
 
-如图所示，案例采用写死的方式，建议添加gva配置文件，使用gva全局配置，例如Email案例
-
-![img_1.png](img_1.png)
+```go
+// 微信模块
+PluginInit(PublicGroup, wechat.CreateWechatPlug(
+    global.GVA_REDIS,
+    global.GVA_DB,
+    global.GVA_LOG),
+)
+```
 
 #### 3. 获取accesstoken
 
 你可以在任何你想得到accesstoken的位置调用server/plugin/wechat/common包中的方法获取accesstoken
 
-![img.png](img.png)
+```go
+// GetWechatAccessToken 从中控服务器获取微信AccessToken
+
+// GetWechatPublicAccessToken 从中控服务器获取微信公众号AccessToken
+
+// GetWechatPublicJsApiTicket 从中控服务器获取微信公众号JsApiTicket
+
+// GetWechatConfig 获取微信配置
+```
 
 
 ### 全局配置说明
 
 ```go
 type Config struct {
-	Wechat *config.Wechat // 微信小程序appid和secret和公众号appid和secret
-	Rdb    *redis.Client
-	Log    *zap.Logger
+    Rdb *redis.Client // redis
+    Log *zap.Logger // zap日志
+    DB  *gorm.DB // db
 }
 ```
 
@@ -41,12 +65,11 @@ type Config struct {
 
 **注意：示例功能为公众号开发，依赖公众号appid和secret，需要开发ip白名单**
 
-![img_2.png](img_2.png)
+![img_4.png](img_4.png)
 
-### 最佳实践
-
-你可以将server/plugin/wechat/common包移动到server目录下，避免深目录的引用，可以更自由的和你自己的公共模块一起使用
+![img_5.png](img_5.png)
 
 ### 注意事项
 
-如果你只是单独做**小程序**或者**公众号**开发，可以在server/plugin/wechat/jobs/cron.go中管理你需要同步的令牌
+1. 请完成gva初始化之后再完成插件配置
+2. 配置文件打开redis的使用
