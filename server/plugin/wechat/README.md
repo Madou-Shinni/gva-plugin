@@ -21,6 +21,7 @@
 ## 使用步骤
 
 ### 后端
+
 #### 1. 将插件server下的文件夹放入server/plugin目录下
 
 #### 2. 在server/initialize/plugin.go中注册插件
@@ -59,6 +60,10 @@ type Config struct {
 }
 ```
 
+### 前端
+
+#### 1. 将web下的文件夹放入web/src/plugin目录下
+
 ### 可直接调用的api
 
 如图所示，已配置swagger
@@ -73,3 +78,4 @@ type Config struct {
 
 1. 请完成gva初始化之后再完成插件配置
 2. 配置文件打开redis的使用
+3. 修改完微信配置没有及时生效是正常情况，稍等片刻即可
