@@ -13,6 +13,9 @@
         <el-form-item label="小程序Secret" prop="miniProgram.appSecret">
           <el-input v-model="wechatConfig.miniProgram.appSecret"></el-input>
         </el-form-item>
+        <el-form-item style="margin-left: 20px;">
+          <el-button type="primary" @click="getMiniProgramAccessToken">获取小程序AccessToken</el-button>
+        </el-form-item>
       </el-form-item>
 
       <el-form-item label="公众号配置" prop="officialAccountEnabled">
@@ -25,19 +28,27 @@
         <el-form-item label="公众号Secret" prop="officialAccount.appSecret">
           <el-input v-model="wechatConfig.officialAccount.appSecret"></el-input>
         </el-form-item>
+        <el-form-item style="margin-left: 20px;">
+          <el-button type="primary" @click="getOfficialAccountAccessToken">获取公众号AccessToken</el-button>
+        </el-form-item>
       </el-form-item>
 
       <el-form-item>
         <el-button type="primary" @click="updateConfig">更新配置</el-button>
       </el-form-item>
     </el-form>
+
+    <!-- 弹窗 -->
+    <el-dialog v-model:="dialog.visible" title="提示" :center="true" :before-close="handleClose">
+      <span class="text-3xl">{{ dialog.content }}</span>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { ElSwitch, ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus';
-import {getWechatConfig, updateWechatConfig} from "@/plugin/wechat/api/wechat";
+import {getAccessToken, getWechatConfig, updateWechatConfig} from "@/plugin/wechat/api/wechat";
 
 defineOptions({
   name: 'Wechat',
@@ -58,6 +69,16 @@ const wechatConfig = ref({
   }
 });
 
+const dialog = ref({
+  visible: false,
+  content: ''
+})
+
+const handleClose = () => {
+  dialog.value.visible = false
+  dialog.value.content = ''
+}
+
 const rules = {
   miniProgram: {
     appId: [{ required: true, message: '请输入小程序AppID', trigger: 'blur' }],
@@ -69,13 +90,16 @@ const rules = {
   }
 };
 
+// 获取配置
 const getConfig = async() => {
   const res = await getWechatConfig()
   if (res.code === 0) {
     wechatConfig.value = res.data
   }
 }
+getConfig()
 
+// 修改配置
 const updateConfig = async() => {
   wechatConfigForm.value.validate(async valid => {
     if (valid) {
@@ -95,6 +119,23 @@ const updateConfig = async() => {
   })
 };
 
-getConfig()
+const getMiniProgramAccessToken = async() => {
+  const res = await getAccessToken('miniProgram')
+  if (res.code === 0) {
+    // 实现获取小程序 access token 的逻辑
+    console.log('获取小程序AccessToken');
+    dialog.value.visible = true
+    dialog.value.content = res.data.accessToken
+  }
+}
+
+const getOfficialAccountAccessToken = async() => {
+  const res = await getAccessToken('officialAccount')
+  if (res.code === 0) {
+    // 实现获取小程序 access token 的逻辑
+    dialog.value.visible = true
+    dialog.value.content = res.data.accessToken
+  }
+}
 
 </script>
