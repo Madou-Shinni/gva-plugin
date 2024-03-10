@@ -1,9 +1,12 @@
 package common
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/wechat/global"
+)
 
 const (
-	WechatConfigKey      = "we_chat_config"
+	WechatConfigKey      = "we_chat_config:%s"
 	WeChatAccessTokenKey = "we_chat_access_token:%s"
 	WeChatJsApiTicketKey = "we_chat_js_api_ticket:%s"
 )
@@ -20,5 +23,5 @@ func GetWeChatJsApiTicketKey(appid string) string {
 
 // GetWechatConfigKey 获取微信配置key
 func GetWechatConfigKey() string {
-	return WechatConfigKey
+	return fmt.Sprintf(WechatConfigKey, global.GlobalConfig.ID)
 }

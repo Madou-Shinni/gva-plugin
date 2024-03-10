@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	ID  string
 	Rdb *redis.Client
 	Log *zap.Logger
 	DB  *gorm.DB

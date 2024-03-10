@@ -29,6 +29,7 @@
 ```go
 // 微信模块
 PluginInit(PublicGroup, wechat.CreateWechatPlug(
+    "gin-vue-admin-wechat-plugin", // 上线需要保证每个项目id不同，避免多个项目部署同一个机器 微信配置冲突
     global.GVA_REDIS,
     global.GVA_DB,
     global.GVA_LOG),
@@ -54,6 +55,7 @@ PluginInit(PublicGroup, wechat.CreateWechatPlug(
 
 ```go
 type Config struct {
+    ID  string // 项目唯一标识
     Rdb *redis.Client // redis
     Log *zap.Logger // zap日志
     DB  *gorm.DB // db
@@ -79,3 +81,4 @@ type Config struct {
 1. 请完成gva初始化之后再完成插件配置
 2. 配置文件打开redis的使用
 3. 修改完微信配置没有及时生效是正常情况，稍等片刻即可
+4. **请保证部署正式或测试时每个项目的全局配置ID不同**

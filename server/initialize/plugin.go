@@ -37,6 +37,7 @@ func InstallPlugin(Router *gin.Engine) {
 
 	// 微信模块
 	PluginInit(PublicGroup, wechat.CreateWechatPlug(
+		"gin-vue-admin-wechat-plugin", // 上线需要保证每个项目id不同，避免多个项目部署同一个机器 微信配置冲突
 		global.GVA_REDIS,
 		global.GVA_DB,
 		global.GVA_LOG),

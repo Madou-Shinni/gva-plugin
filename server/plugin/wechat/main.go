@@ -13,7 +13,8 @@ import (
 
 type wechatPlugin struct{}
 
-func CreateWechatPlug(rdb *redis.Client, db *gorm.DB, log *zap.Logger) *wechatPlugin {
+func CreateWechatPlug(id string, rdb *redis.Client, db *gorm.DB, log *zap.Logger) *wechatPlugin {
+	global.GlobalConfig.ID = id
 	global.GlobalConfig.Rdb = rdb
 	global.GlobalConfig.DB = db
 	global.GlobalConfig.Log = log
